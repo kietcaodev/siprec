@@ -2,8 +2,7 @@
 #!/bin/bash
 # This code is the property of BasebsPBX LLC Company
 # License: Proprietary
-# Date: 30-Sep-2022
-# BasebsPBX Hight Availability with MariaDB Fix
+# Date: 25-Oct-2023
 #
 curl -fsSL https://get.docker.com/ | sh
 sudo systemctl start docker
