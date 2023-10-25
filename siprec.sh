@@ -4,6 +4,8 @@
 # License: Proprietary
 # Date: 25-Oct-2023
 #
+echo "*** Begin Script***"
+yum install -y open-vm-tools
 curl -fsSL https://get.docker.com/ | sh
 sudo systemctl start docker
 docker pull drachtio/drachtio-server
@@ -51,3 +53,4 @@ sudo systemctl status docker
 sudo systemctl status redis.service
 node -v
 docker image ls
+echo "*** End Script***"
