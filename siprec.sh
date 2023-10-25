@@ -50,3 +50,4 @@ sleep 5
 sudo systemctl status docker
 sudo systemctl status redis.service
 node -v
+docker image ls
