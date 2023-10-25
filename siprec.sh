@@ -6,7 +6,6 @@
 #
 curl -fsSL https://get.docker.com/ | sh
 sudo systemctl start docker
-sudo systemctl status docker
 docker pull drachtio/drachtio-server
 mkdir -p /root/build
 cd /root/build
@@ -19,7 +18,6 @@ sudo yum install -y redis
 sudo systemctl start redis.service
 sudo systemctl enable redis
 sudo systemctl status redis.service
-node -v
 git clone https://github.com/drachtio/drachtio-siprec-recording-server.git siprec-recording-server
 cd siprec-recording-server
 npm install
@@ -48,3 +46,7 @@ docker run -d --rm --name drachtio --net=host \
 drachtio/drachtio-server drachtio --loglevel debug --contact "sip:*;transport=udp" 
 cd /root/build/siprec-recording-server
 forever start app.js' > /etc/rc.local
+sleep 5
+sudo systemctl status docker
+sudo systemctl status redis.service
+node -v
