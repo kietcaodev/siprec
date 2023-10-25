@@ -14,6 +14,7 @@ yum install -y git
 curl -sL https://rpm.nodesource.com/setup_14.x | sudo bash -
 yum install nodejs -y
 sudo yum install -y epel-release 
+sleep 5
 sudo yum install -y redis
 sudo systemctl start redis.service
 sudo systemctl enable redis
