@@ -1,4 +1,9 @@
 #!/bin/bash
+sudo yum install -y expect
+sudo yum -y install mariadb-server
+sudo systemctl enable --now mariadb
+sudo systemctl start mariadb
+sleep 5
 expect -f - <<-EOF
   set timeout 10
   spawn mysql_secure_installation
