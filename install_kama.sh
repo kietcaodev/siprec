@@ -8,5 +8,8 @@ baseurl=http://packages.irontec.com/centos/$releasever/$basearch/' > /etc/yum.re
 rpm --import http://packages.irontec.com/public.key
 yum install sngrep -y
 cp -r /etc/kamailio /etc/kamailio.bk
+wget https://raw.githubusercontent.com/kietcaodev/siprec/main/kama_sample.sh
+mv /etc/kamailio/kamailio.cfg /etc/kamailio/kamailio.cfg.bk
+cp kama_sample.sh /etc/kamailio/kamailio.cfg
 mv /etc/kamailio/kamctlrc /etc/kamailio/kamctlrc.bk
 
