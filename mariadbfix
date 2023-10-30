@@ -1,0 +1,115 @@
+
+#!/bin/bash
+# This code is the property of BasebsPBX LLC Company
+# License: Proprietary
+# Date: 25-Oct-2023
+# BasebsPBX Hight Availability with MariaDB Fix
+#
+
+filename="config.txt"
+if [ -f $filename ]; then
+	echo -e "config file"
+	n=1
+	while read line; do
+		case $n in
+			1)
+				ip_master=$line
+  			;;
+			2)
+				ip_standby=$line
+  			;;
+			3)
+				ip_floating=$line
+  			;;
+			4)
+				ip_floating_mask=$line
+  			;;
+			5)
+				hapassword=$line
+  			;;
+			6)
+				mysql_root_password=$line
+  			;;
+		esac
+		n=$((n+1))
+	done < $filename
+	echo -e "IP Master................ > $ip_master"	
+	echo -e "IP Standby............... > $ip_standby"
+	echo -e "Floating IP.............. > $ip_floating "
+	echo -e "Floating IP Mask (SIDR).. > $ip_floating_mask"
+
+fi
+echo -e "************************************************************"
+echo -e "*                Reset mariadb replica                     *"
+echo -e "************************************************************"
+mysql -uroot -p$mysql_root_password -e "STOP SLAVE;"
+mysql -uroot -p$mysql_root_password -e "RESET SLAVE;"
+systemctl restart mariadb
+ssh root@$ip_standby "mysql -uroot -p$mysql_root_password -e 'STOP SLAVE;'"
+ssh root@$ip_standby "mysql -uroot -p$mysql_root_password -e 'RESET SLAVE;'"
+ssh root@$ip_standby "systemctl restart mariadb"
+# Create sync again
+echo -e "************************************************************"
+echo -e "*                Create mariadb replica                    *"
+echo -e "************************************************************"
+#Remove anonymous user from MySQL
+mysql -uroot -p$mysql_root_password -e "DELETE FROM mysql.user WHERE User='';"
+
+#Create a new user on the Master-1
+mysql -uroot -p$mysql_root_password -e "GRANT REPLICATION SLAVE ON *.* to basebs_replica@'%' IDENTIFIED BY 'basebs_replica';"
+mysql -uroot -p$mysql_root_password -e "FLUSH PRIVILEGES;"
+mysql -uroot -p$mysql_root_password -e "FLUSH TABLES WITH READ LOCK;"
+#Get bin_log on Master-1
+file_server_1=`mysql -uroot -p$mysql_root_password -e "show master status" | awk 'NR==2 {print $1}'`
+position_server_1=`mysql -uroot -p$mysql_root_password -e "show master status" | awk 'NR==2 {print $2}'`
+
+#Now on the Master-1 server, do a dump of the database MySQL and import it to Master-2
+mysqldump -u root -p$mysql_root_password --all-databases > all_databases.sql
+scp all_databases.sql root@$ip_standby:/tmp/all_databases.sql
+cat > /tmp/mysqldump.sh << EOF
+#!/bin/bash
+mysql -u root -p$mysql_root_password <  /tmp/all_databases.sql 
+EOF
+scp /tmp/mysqldump.sh root@$ip_standby:/tmp/mysqldump.sh
+ssh root@$ip_standby "chmod +x /tmp/mysqldump.sh"
+ssh root@$ip_standby "/tmp/./mysqldump.sh"
+
+#Create a new user on the Master-2
+cat > /tmp/grand.sh << EOF
+#!/bin/bash
+mysql -uroot -p$mysql_root_password -e "GRANT REPLICATION SLAVE ON *.* to basebs_replica@'%' IDENTIFIED BY 'basebs_replica';"
+mysql -uroot -p$mysql_root_password -e "FLUSH PRIVILEGES;"
+mysql -uroot -p$mysql_root_password -e "FLUSH TABLES WITH READ LOCK;"
+EOF
+scp /tmp/grand.sh root@$ip_standby:/tmp/grand.sh
+ssh root@$ip_standby "chmod +x /tmp/grand.sh"
+ssh root@$ip_standby "/tmp/./grand.sh"
+#Get bin_log on Master-2
+file_server_2=`ssh root@$ip_standby "mysql -uroot -p$mysql_root_password -e 'show master status;'" | awk 'NR==2 {print $1}'`
+position_server_2=`ssh root@$ip_standby "mysql -uroot -p$mysql_root_password -e 'show master status;'" | awk 'NR==2 {print $2}'`
+#Stop the slave, add Master-1 to the Master-2 and start slave
+cat > /tmp/change.sh << EOF
+#!/bin/bash
+mysql -uroot -p$mysql_root_password -e "STOP SLAVE;"
+mysql -uroot -p$mysql_root_password -e "CHANGE MASTER TO MASTER_HOST='$ip_master', MASTER_USER='basebs_replica', MASTER_PASSWORD='basebs_replica', MASTER_LOG_FILE='$file_server_1', MASTER_LOG_POS=$position_server_1;"
+mysql -uroot -p$mysql_root_password -e "START SLAVE;"
+EOF
+scp /tmp/change.sh root@$ip_standby:/tmp/change.sh
+ssh root@$ip_standby "chmod +x /tmp/change.sh"
+ssh root@$ip_standby "/tmp/./change.sh"
+
+#Connect to Master-1 and follow the same steps
+mysql -uroot -p$mysql_root_password -e "STOP SLAVE;"
+mysql -uroot -p$mysql_root_password -e "CHANGE MASTER TO MASTER_HOST='$ip_standby', MASTER_USER='basebs_replica', MASTER_PASSWORD='basebs_replica', MASTER_LOG_FILE='$file_server_2', MASTER_LOG_POS=$position_server_2;"
+mysql -uroot -p$mysql_root_password -e "START SLAVE;"
+
+chmod +x /usr/bin/mariadbfix
+
+echo -e "************************************************************"
+echo -e "*                 BasebsPBX Cluster OK                      *"
+echo -e "*          MariaDB Database repaired successfully          *"
+echo -e "************************************************************"
+
+role
+
+
