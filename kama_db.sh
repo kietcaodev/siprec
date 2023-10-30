@@ -3,7 +3,7 @@ expect -f - <<-EOF
   set timeout 10
   spawn sudo kamdbctl create
   expect "MySQL password for root:"
-  send -- "Basebs2022\r"
+  send -- "mariadb_pass\r"
   expect "Create the presence related tables?"
   send -- "y\r"
   expect "rtpproxy rtpengine secfilter?"
