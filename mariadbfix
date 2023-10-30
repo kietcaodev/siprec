@@ -22,23 +22,33 @@ if [ -f $filename ]; then
 				ip_floating=$line
   			;;
 			4)
-				ip_floating_mask=$line
+				hostname_master=$line
   			;;
 			5)
+				hostname_standby=$line
+			;;	
+			6)
 				hapassword=$line
   			;;
-			6)
+			7)
 				mysql_root_password=$line
+  			;;
+			8)
+				ntp_time=$line
   			;;
 		esac
 		n=$((n+1))
 	done < $filename
 	echo -e "IP Master................ > $ip_master"	
 	echo -e "IP Standby............... > $ip_standby"
-	echo -e "Floating IP.............. > $ip_floating "
-	echo -e "Floating IP Mask (SIDR).. > $ip_floating_mask"
-
+	echo -e "Virtual IP............... > $ip_floating "
+	echo -e "Hostname Master.......... > $hostname_master"
+	echo -e "Hostname Standby......... > $hostname_standby"
+	echo -e "hacluster password....... > $hapassword"
+	echo -e "mysql password........... > $mysql_root_password"
+	echo -e "ntp time server.......... > $ntp_time"
 fi
+
 echo -e "************************************************************"
 echo -e "*                Reset mariadb replica                     *"
 echo -e "************************************************************"
