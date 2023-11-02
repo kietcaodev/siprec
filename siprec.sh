@@ -18,7 +18,6 @@ sleep 5
 sudo yum install -y redis
 sudo systemctl start redis.service
 sudo systemctl enable redis
-sudo systemctl status redis.service
 git clone https://github.com/drachtio/drachtio-siprec-recording-server.git siprec-recording-server
 cd siprec-recording-server
 npm install
