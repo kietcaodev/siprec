@@ -43,7 +43,7 @@ echo '#!/bin/bash
 
 touch /var/lock/subsys/local
 docker run -d --rm --name drachtio --net=host \
-drachtio/drachtio-server drachtio --loglevel debug --contact "sip:*;transport=udp" 
+drachtio/drachtio-server drachtio --loglevel notice --sofia-loglevel 0 --contact "sip:*;transport=udp" 
 cd /root/build/siprec-recording-server
 forever start app.js' > /etc/rc.local
 sleep 5
