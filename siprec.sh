@@ -20,6 +20,14 @@ sudo systemctl start redis.service
 sudo systemctl enable redis
 git clone https://github.com/drachtio/drachtio-siprec-recording-server.git siprec-recording-server
 cd siprec-recording-server
+echo '{
+    "uid": "app",
+    "append": true,
+    "watch": true,
+    "script": "app.js",
+    "sourceDir": "/root/build/siprec-recording-server",
+    "logFile": "/root/.forever/drachtio-vgw-new.log"
+}' > development.json
 npm install
 git clone https://github.com/kietcaodev/siprec.git
 mv config config.bk
@@ -42,10 +50,10 @@ echo '#!/bin/bash
 # that this script will be executed during boot.
 
 touch /var/lock/subsys/local
-docker run -d --rm --name drachtio --net=host \
+docker run -d --rm --name drachtio-vgw-new --net=host \
 drachtio/drachtio-server drachtio --loglevel notice --sofia-loglevel 0 --contact "sip:*;transport=udp" 
 cd /root/build/siprec-recording-server
-forever start app.js' > /etc/rc.local
+forever start development.json' > /etc/rc.local
 sleep 5
 sudo systemctl status docker
 sudo systemctl status redis.service
