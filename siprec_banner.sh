@@ -40,7 +40,7 @@ echo -e "
  Users          : \`uptime | grep -ohe '[0-9.*] user[s,]'\`
  IP Address     : \${green}\`ip addr | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p' | xargs\`\${txtrst}
  Clock          :\`timedatectl | sed -n '/Local time/ s/^[ \t]*Local time:\(.*$\)/\1/p'\`
- NTP Sync.      :\`timedatectl |awk -F: '/NTP sync/ {print \$2}'\`
+ NTP Sync       :\`timedatectl |awk -F: '/System clock synchronized/ {print \$2}'\`
 "
 EOF
 chmod 755 /etc/profile.d/basebswelcome.sh
