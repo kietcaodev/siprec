@@ -59,8 +59,6 @@ drachtio/drachtio-server drachtio --loglevel notice --sofia-loglevel 0 --contact
 cd /root/build/siprec-recording-server
 forever start development.json' > /etc/rc.local
 sleep 5
-sudo systemctl status docker
-sudo systemctl status redis.service
 node -v
 docker image ls
 echo "*** End Script***"
