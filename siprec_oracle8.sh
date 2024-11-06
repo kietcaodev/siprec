@@ -58,6 +58,7 @@ docker run -d --rm --name drachtio-vgw-new --net=host \
 drachtio/drachtio-server drachtio --loglevel notice --sofia-loglevel 0 --contact "sip:*;transport=udp" 
 cd /root/build/siprec-recording-server
 forever start development.json' > /etc/rc.local
+systemctl restart rc-local
 sleep 5
 node -v
 docker image ls
