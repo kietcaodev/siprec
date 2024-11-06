@@ -63,4 +63,4 @@ sleep 5
 node -v
 docker image ls
 echo "*** End Script***"
-echo ""*** Congratulations! SIPREC has been installed, listen udp:5060 ***""
+echo "*** Congratulations! SIPREC has been installed, listen udp:5060 ***"
