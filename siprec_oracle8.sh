@@ -15,7 +15,7 @@ docker pull drachtio/drachtio-server
 mkdir -p /root/build
 cd /root/build
 yum install -y git
-curl -sL https://rpm.nodesource.com/setup_14.x | sudo bash -
+curl -sL https://rpm.nodesource.com/setup_18.x | sudo bash -
 yum install nodejs -y
 sudo yum install -y epel-release 
 sleep 5
