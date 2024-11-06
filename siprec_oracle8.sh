@@ -3,7 +3,7 @@
 # License: Proprietary
 # Date: 05-Nov-2024
 #
-echo "*** Begin Script***"
+echo "*** Begin Script Building SIPREC***"
 sudo yum install -y yum-utils
 sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 sudo yum install -y docker-ce docker-ce-cli containerd.io
@@ -63,3 +63,4 @@ sleep 5
 node -v
 docker image ls
 echo "*** End Script***"
+echo ""*** Congratulations! SIPREC has been installed, listen udp:5060 ***""
