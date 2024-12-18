@@ -9,14 +9,11 @@ green="\033[00;32m"
 txtrst="\033[00;0m"
 if [ -f /etc/redhat-release ]; then
         linux_ver=\`cat /etc/redhat-release\`
-        basebspbx_ver=\`rpm -qi basebspbx |awk -F: '/^Version/ {print \$2}'\`
         basebspbx_release=\`rpm -qi basebspbx |awk -F: '/^Release/ {print \$2}'\`
 elif [ -f /etc/debian_version ]; then
         linux_ver="Debian "\`cat /etc/debian_version\`
-        basebspbx_ver=\`dpkg -l basebspbx |awk '/ombutel/ {print \$3}'\`
 else
         linux_ver=""
-        basebspbx_ver=""
         basebspbx_release=""
 fi
 bpbx_version="KietCT_HA_Ver1"
