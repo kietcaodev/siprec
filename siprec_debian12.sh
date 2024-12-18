@@ -4,13 +4,18 @@
 # Date: 05-Nov-2024
 #
 echo "*** Begin Script Building SIPREC***"
-sudo yum install -y yum-utils
-sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-sudo yum install -y docker-ce docker-ce-cli containerd.io
-sudo systemctl start docker
+#Install docker and docker compose
+sudo apt update && sudo apt upgrade -y
+sudo apt install apt-transport-https ca-certificates curl software-properties-common gnupg2 -y
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
+echo "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
+sudo apt update && sudo apt install docker-ce -y
 sudo systemctl enable docker
-sudo yum install docker-compose-plugin
-docker compose version
+sudo docker run hello-world
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+docker-compose --version
+#Install siprec-server
 docker pull drachtio/drachtio-server
 mkdir -p /root/build
 cd /root/build
