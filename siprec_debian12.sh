@@ -5,6 +5,7 @@
 #
 echo "*** Begin Script Building SIPREC***"
 #Install docker and docker compose
+apt -y install sudo
 sudo apt update && sudo apt upgrade -y
 sudo apt install apt-transport-https ca-certificates curl software-properties-common gnupg2 -y
 curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
@@ -16,17 +17,16 @@ sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-
 sudo chmod +x /usr/local/bin/docker-compose
 docker-compose --version
 #Install siprec-server
+
 docker pull drachtio/drachtio-server
 mkdir -p /root/build
 cd /root/build
-yum install -y git
-curl -sL https://rpm.nodesource.com/setup_18.x | sudo bash -
-yum install nodejs -y
-sudo yum install -y epel-release 
+sudo apt install -y git nodejs npm
 sleep 5
-sudo yum install -y redis
-sudo systemctl start redis.service
-sudo systemctl enable redis
+sudo apt install -y redis
+sudo systemctl start redis-server
+sudo systemctl enable redis-server
+sudo systemctl status redis-server
 git clone https://github.com/drachtio/drachtio-siprec-recording-server.git siprec-recording-server
 cd siprec-recording-server
 echo '{
@@ -45,7 +45,6 @@ cp -r siprec/config config
 cp -r siprec/lib lib
 sudo npm install -g forever
 npm list forever -g
-chmod -v +x /etc/rc.local
 echo '#!/bin/bash
 # THIS FILE IS ADDED FOR COMPATIBILITY PURPOSES
 #
@@ -63,7 +62,9 @@ docker run -d --rm --name drachtio-vgw-new --net=host \
 drachtio/drachtio-server drachtio --loglevel notice --sofia-loglevel 0 --contact "sip:*;transport=udp" 
 cd /root/build/siprec-recording-server
 forever start development.json' > /etc/rc.local
+chmod -v +x /etc/rc.local
 systemctl restart rc-local
+systemctl status rc-local
 sleep 5
 node -v
 docker image ls
