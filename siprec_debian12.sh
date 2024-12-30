@@ -27,7 +27,7 @@ sudo apt install -y redis
 sudo systemctl start redis-server
 sudo systemctl enable redis-server
 sudo systemctl status redis-server
-git clone https://github.com/kietcaodev/drachtio-siprec-recording-server.git
+git clone https://github.com/kietcaodev/drachtio-siprec-recording-server.git siprec-recording-server
 cd siprec-recording-server
 echo '{
     "uid": "app",
