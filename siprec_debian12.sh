@@ -58,8 +58,9 @@ echo '#!/bin/bash
 # that this script will be executed during boot.
 
 touch /var/lock/subsys/local
+docker rm -f drachtio-vgw-new 2>/dev/null || true
 docker run -d --rm --name drachtio-vgw-new --net=host \
-drachtio/drachtio-server drachtio --loglevel notice --sofia-loglevel 0 --contact "sip:*;transport=udp" 
+drachtio/drachtio-server drachtio --loglevel notice --sofia-loglevel 0 --contact "sip:*;transport=udp"
 cd /root/build/siprec-recording-server
 forever start development.json' > /etc/rc.local
 chmod -v +x /etc/rc.local
